@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Valentine?</title>
+  <style>
+    :root{
+      --bg1:#0b0b10;
+      --bg2:#171726;
+      --stroke:rgba(255,255,255,.12);
+      --text:rgba(255,255,255,.92);
+      --muted:rgba(255,255,255,.72);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100dvh;
+      display:grid; place-items:center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 800px at 20% 10%, rgba(255,120,180,.18), transparent 60%),
+        radial-gradient(900px 600px at 90% 90%, rgba(140,120,255,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      overflow:hidden;
+    }
+    .card{
+      width:min(520px, 92vw);
+      border:1px solid var(--stroke);
+      background:rgba(17,17,26,.72);
+      backdrop-filter: blur(10px);
+      border-radius:24px;
+      padding:22px 18px 18px;
+      box-shadow: 0 20px 80px rgba(0,0,0,.45);
+      position:relative;
+    }
+    .hero{
+      display:flex; flex-direction:column; align-items:center;
+      gap:14px; padding:10px 8px 6px;
+      text-align:center;
+    }
+    .imgWrap{
+      width:180px; height:180px;
+      border-radius:28px;
+      border:1px solid var(--stroke);
+      display:grid; place-items:center;
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      overflow:hidden;
+    }
+    /* If you add an image file, uncomment the <img> tag in HTML and use this class */
+    .minion{
+      width:100%; height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .emoji{
+      font-size:84px;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.35));
+    }
+    h1{
+      margin:0;
+      font-size: clamp(22px, 4.8vw, 34px);
+      letter-spacing:-.02em;
+    }
+    p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+
+    .playground{
+      margin-top:16px;
+      position:relative;
+      height:150px;
+      border-radius:18px;
+      border:1px dashed rgba(255,255,255,.14);
+      background: rgba(0,0,0,.16);
+      overflow:hidden;
+    }
+
+    .btn{
+      border:0;
+      border-radius:16px;
+      padding:12px 16px;
+      font-weight:700;
+      cursor:pointer;
+      user-select:none;
+      transition: transform .12s ease, filter .12s ease;
+      will-change: transform, left, top;
+      position:absolute;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      touch-action: manipulation;
+    }
+    .btn:active{ transform: scale(.98); }
+
+    /* YES */
+    #yes{
+      left:50%;
+      top:58%;
+      transform: translate(-50%, -50%) scale(1);
+      background: white;
+      color:#11111a;
+      min-width:140px;
+      box-shadow: 0 18px 50px rgba(255,255,255,.12);
+    }
+
+    /* NO */
+    #no{
+      left:50%;
+      top:30%;
+      transform: translate(-50%, -50%) scale(1);
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.92);
+      border:1px solid rgba(255,255,255,.14);
+      min-width:120px;
+    }
+
+    .footer{
+      margin-top:14px;
+      display:flex;
+      justify-content:center;
+      font-size:12px;
+      color: rgba(255,255,255,.55);
+    }
+
+    .toast{
+      position:fixed;
+      bottom:14px;
+      left:50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,.55);
+      border:1px solid rgba(255,255,255,.12);
+      color: rgba(255,255,255,.92);
+      padding:10px 14px;
+      border-radius:14px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+      font-size:13px;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease;
+    }
+    .toast.show{ opacity:1; }
+
+    /* Success screen */
+    .overlay{
+      position:fixed; inset:0;
+      display:none;
+      place-items:center;
+      background: rgba(0,0,0,.6);
+      backdrop-filter: blur(8px);
+      padding:18px;
+    }
+    .overlay.show{ display:grid; }
+    .modal{
+      width:min(520px, 92vw);
+      border-radius:24px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(17,17,26,.86);
+      box-shadow: 0 20px 90px rgba(0,0,0,.55);
+      padding:22px 18px;
+      text-align:center;
+    }
+    .modal h2{
+      margin:0 0 8px 0;
+      font-size: clamp(22px, 5vw, 32px);
+    }
+    .modal p{ margin:0 0 14px 0; }
+    .modal .row{
+      display:flex; gap:10px; justify-content:center; flex-wrap:wrap;
+      margin-top:10px;
+    }
+    .pill{
+      border-radius:999px;
+      padding:10px 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.92);
+      cursor:pointer;
+      font-weight:700;
+    }
+    .pill.primary{
+      background:#fff;
+      color:#11111a;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="card" aria-label="Valentine card">
+    <section class="hero">
+      <div class="imgWrap" aria-label="Minion image">
+        <!-- OPTION A: add an image file next to this HTML (e.g., minion.png) and uncomment the tag below -->
+        <!-- <img class="minion" src="./minion.png" alt="Minion with a heart" /> -->
+
+        <!-- OPTION B: placeholder -->
+        <div class="emoji" aria-hidden="true">💛🫶</div>
+      </div>
+
+      <h1>Will you be my valentine?</h1>
+      <p>Try pressing “NO”… if you can 😈</p>
+    </section>
+
+    <section class="playground" id="arena" aria-label="Buttons area">
+      <button class="btn" id="no" type="button">NO</button>
+      <button class="btn" id="yes" type="button">YES</button>
+    </section>
+
+    <div class="footer">Made with love 💘</div>
+  </main>
+
+  <div class="toast" id="toast">Nice try 😏</div>
+
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true">
+    <div class="modal">
+      <h2>Yaaay! 💖</h2>
+      <p>See you on Valentine’s Day 😘</p>
+      <div class="row">
+        <button class="pill primary" id="copyMessage" type="button">Copy message</button>
+        <button class="pill" id="close" type="button">Close</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const arena = document.getElementById("arena");
+  const btnNo = document.getElementById("no");
+  const btnYes = document.getElementById("yes");
+  const toast = document.getElementById("toast");
+  const overlay = document.getElementById("overlay");
+  const closeBtn = document.getElementById("close");
+  const copyBtn = document.getElementById("copyMessage");
+
+  let noScale = 1;
+  let yesScale = 1;
+
+  // Tuning
+  const YES_GROW = 1.18;   // +18% each attempt
+  const NO_SHRINK = 0.86;  // -14% each attempt
+  const MIN_NO_SCALE = 0.20;
+  const MAX_YES_SCALE = 3.2;
+
+  function showToast(msg){
+    toast.textContent = msg;
+    toast.classList.add("show");
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(()=>toast.classList.remove("show"), 900);
+  }
+
+  function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+  function randomPositionForNo(){
+    const a = arena.getBoundingClientRect();
+    const b = btnNo.getBoundingClientRect();
+
+    const pad = 10;
+    const maxLeft = a.width - b.width - pad;
+    const maxTop  = a.height - b.height - pad;
+
+    const left = pad + Math.random() * Math.max(0, maxLeft - pad);
+    const top  = pad + Math.random() * Math.max(0, maxTop - pad);
+
+    btnNo.style.left = left + "px";
+    btnNo.style.top = top + "px";
+    btnNo.style.transform = `scale(${noScale})`;
+  }
+
+  function applyYesScale(){
+    btnYes.style.transform = `translate(-50%, -50%) scale(${yesScale})`;
+  }
+
+  function applyNoScale(){
+    const isCentered = btnNo.style.left === "" || btnNo.style.left === "50%";
+    if (isCentered){
+      btnNo.style.transform = `translate(-50%, -50%) scale(${noScale})`;
+    } else {
+      btnNo.style.transform = `scale(${noScale})`;
+    }
+  }
+
+  // Init
+  btnNo.style.left = "50%";
+  btnNo.style.top = "30%";
+  btnYes.style.left = "50%";
+  btnYes.style.top = "58%";
+
+  const evade = () => {
+    yesScale = clamp(yesScale * YES_GROW, 1, MAX_YES_SCALE);
+    noScale  = clamp(noScale  * NO_SHRINK, MIN_NO_SCALE, 1);
+
+    applyYesScale();
+    applyNoScale();
+
+    randomPositionForNo();
+    showToast("Nice try 😏");
+  };
+
+  btnNo.addEventListener("mouseenter", evade);
+
+  btnNo.addEventListener("touchstart", (e) => {
+    e.preventDefault();
+    evade();
+  }, { passive:false });
+
+  btnNo.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    evade();
+  });
+
+  btnNo.addEventListener("click", (e) => {
+    e.preventDefault();
+    evade();
+  });
+
+  btnYes.addEventListener("click", () => {
+    overlay.classList.add("show");
+  });
+
+  closeBtn.addEventListener("click", () => overlay.classList.remove("show"));
+  overlay.addEventListener("click", (e) => {
+    if (e.target === overlay) overlay.classList.remove("show");
+  });
+
+  copyBtn.addEventListener("click", async () => {
+    const msg = "Will you be my valentine? 💖";
+    try{
+      await navigator.clipboard.writeText(msg);
+      showToast("Copied ✨");
+    } catch {
+      showToast("Copy not allowed");
+    }
+  });
+
+  applyYesScale();
+  applyNoScale();
+</script>
+</body>
+</html>
